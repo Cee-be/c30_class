@@ -1,7 +1,7 @@
 # CS 30 Wrk
 
 ## Demos
--demos storage
+- [Traffic lights](traffic-lights)
 
 ## Assignments
 -[Interactive Scene](interactive-scene)
