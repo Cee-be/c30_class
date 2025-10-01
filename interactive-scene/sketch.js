@@ -5,110 +5,83 @@
 //
 //
 
-let scene1 = true;
-let scene2 = false;
-let y;
 let x;
-let velY;
-let accY;
-let radius;
+const scene1 = true;
+let bubbleY;
+let bubbleRadius;
+let ballRadius;
+let ballY;
 let topLimit;
 let bottomLimit;
-let ballBottom;
-let moonTop;
+let bubbleTop;
+let sitting;
+let velY;
+let accY;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  moonY = windowHeight/6;
-  ballY = windowHeight/6;
-  x = windowWidth/2;
-  radius = 200;
-  velY = 1;
-  accY = 1;
-  topLimit = radius/1.5;
-  bottomLimit = height - radius - 30;
+  x = windowWidth / 2;
+  bubbleY = windowHeight / 4;
+  bubbleRadius = 100;
+  ballRadius = 50;
+  ballY = bubbleY - bubbleRadius / 2 - ballRadius / 2;
+  topLimit = bubbleRadius / 2;
+  bottomLimit = height - bubbleRadius / 2;
+  bubbleTop = bubbleY - bubbleRadius / 2;
+  sitting = true;
+  velY = 0;
+  accY = 0.5;
 }
 
 function draw() {
   background("lightblue");
-  changeScene();
-  fill("black");
-  dropBall();
+
+  myBubble();
+  moveBall();
 }
 
-
-
-function dropBall(){
-  velY += accY;
-  ballY += velY;
-  
-  let ballBottom = ballY + radius/10;
-  let moonTop = moonY - radius/2;
-  
-  if (ballBottom >= moonTop) {
-    ballY = moonTop - radius/10;
-    velY = 0;
-  }
-  
-  if (velY === 0){
-    ballY = moonY - radius/12 - radius/ 10;
-  }
-  
-  if (ballY > bottomLimit) {
-    ballY = bottomLimit;
-    velY = -0.8;
-  }
-  if (ballY < topLimit) {
-    ballY = topLimit;
-    velY = -0.8;
-  }
-  
-  circle(x, ballY+35, radius/4);
-}
-
-function changeScene(){
-  if (scene1 === true){
-    crescentMoon();
-    dropBall();
-  }
-  else if (scene2 === true) {
-    background("green");
-  }
-}
-
-function keyPressed() {
-  if (scene1 === true){
-    if (keyCode === RIGHT_ARROW) {
-      scene2 = true;
-    }
-    scene1 = false;
-  } 
-}
-
-function crescentMoon(){
-  stroke("black");
-  strokeWeight(4);
-  line(x - 50, 0, x - 50, moonY);
-  
-  //yellow moon
+function myBubble() {
   fill("yellow");
-  stroke("lightblue");
-  circle(x-30, moonY+12, radius);
-  
-  //Overlap
-  stroke("lightblue");
-  fill("lightblue");
-  circle(x, moonY, radius-20);
+  circle(x, bubbleY, bubbleRadius);
+
+  fill("black");
+  circle(x, ballY, ballRadius);
 }
 
-function mouseWheel(event){
-  if (event.delta < 0){
-    
-    moonY += 2;
-  }
+function moveBall() {
+  bubbleTop = bubbleY - bubbleRadius / 2;
+
+  if (sitting) {
+    // Keep the ball stuck to the top of the bubble
+    ballY = bubbleTop - ballRadius / 2;
+    velY = 0;
+  } 
   else {
-    moonY -= 2;
+    // Gravity effect
+    velY += accY;
+    ballY += velY;
+    
+    if (ballY + ballRadius / 2 >= height) {
+      ballY = height - ballRadius / 2;
+      velY = 0;
+    }
+
+    // Collision with bubble top
+    if (ballY + ballRadius / 2 >= bubbleTop) {
+      sitting = true;
+      ballY = bubbleTop - ballRadius / 2;
+      velY = 0;
+    }
   }
-  moonY = constrain(moonY, topLimit, bottomLimit);
+}
+
+function mouseWheel(event) {
+  bubbleY += event.delta * 0.1;
+  bubbleY = constrain(bubbleY, topLimit, bottomLimit);
+
+  // A fast scroll makes the ball fall
+  if (abs(event.delta) > 30) {
+    sitting = false;
+  }
 }
 
