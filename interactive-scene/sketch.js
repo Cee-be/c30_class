@@ -5,32 +5,23 @@
 //
 //
 
-let x;
-const scene1 = true;
-let bubbleY;
-let bubbleRadius;
-let ballRadius;
-let ballY;
-let topLimit;
-let bottomLimit;
-let bubbleTop;
-let sitting;
-let velY;
-let accY;
+let x = windowWidth / 2;
+let bubbleY = windowHeight / 4;
+let bubbleRadius = 100;
+let ballRadius = 50;
+let ballY = bubbleY - bubbleRadius / 2 - ballRadius / 2;
+let topLimit = bubbleRadius / 2;
+let bottomLimit = height - bubbleRadius / 2;
+let bubbleTop = bubbleY - bubbleRadius / 2;
+let sitting = true;
+let velY = 0;
+let accY = 0.5;
+let scene1 = true;
+let scene2 = false;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  x = windowWidth / 2;
-  bubbleY = windowHeight / 4;
-  bubbleRadius = 100;
-  ballRadius = 50;
-  ballY = bubbleY - bubbleRadius / 2 - ballRadius / 2;
-  topLimit = bubbleRadius / 2;
-  bottomLimit = height - bubbleRadius / 2;
-  bubbleTop = bubbleY - bubbleRadius / 2;
-  sitting = true;
-  velY = 0;
-  accY = 0.5;
+  textSize(20);
 }
 
 function draw() {
@@ -40,10 +31,25 @@ function draw() {
   moveBall();
 }
 
+function changeScenes(){
+  // the first scene
+  if (scene1 === true) {
+    fill(255, 255, 0);
+    text ("Ready?!!", 100, 100);
+  }
+  //the next scene
+  else if (scene2 === true){
+    fill("blue");
+    text("Nice", 200, 200);
+  }
+}
+
 function myBubble() {
+  // fills bubble with yellow
   fill("yellow");
   circle(x, bubbleY, bubbleRadius);
 
+  //fills ball with black
   fill("black");
   circle(x, ballY, ballRadius);
 }
@@ -82,6 +88,15 @@ function mouseWheel(event) {
   // A fast scroll makes the ball fall
   if (abs(event.delta) > 30) {
     sitting = false;
+  }
+}
+
+function keyPressed(){
+  if (scene1 === true){
+    if (keyCode === RIGHT_ARROW){
+      value = 0;
+    }
+    scene
   }
 }
 
