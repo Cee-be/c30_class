@@ -5,23 +5,26 @@
 //
 //
 
-let x = windowWidth / 2;
-let bubbleY = windowHeight / 4;
-let bubbleRadius = 100;
-let ballRadius = 50;
-let ballY = bubbleY - bubbleRadius / 2 - ballRadius / 2;
-let topLimit = bubbleRadius / 2;
-let bottomLimit = height - bubbleRadius / 2;
-let bubbleTop = bubbleY - bubbleRadius / 2;
-let sitting = true;
-let velY = 0;
-let accY = 0.5;
-let scene1 = true;
-let scene2 = false;
+let x;
+let bubbleY;
+let bubbleRadius;
+let ballRadius;
+let ballY;
+let topLimit;
+let bottomLimit;
+let bubbleTop;
+let sitting;
+let velY;
+let accY;
+let scene;
+let bounceTarget;
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   textSize(20);
+  resetLevel();
+  initializeVariables();
 }
 
 function draw() {
@@ -29,74 +32,142 @@ function draw() {
 
   myBubble();
   moveBall();
+  changeScenes();
+  movingBubble();
 }
+
+function initializeVariables() {
+  x = windowWidth / 2;
+  bubbleY = windowHeight / 4;
+  bubbleRadius = 100;
+  ballRadius = 50;
+  ballY = bubbleY - bubbleRadius / 2 - ballRadius / 2;
+  topLimit = bubbleRadius / 2;
+  bottomLimit = height - bubbleRadius / 2;
+  bubbleTop = bubbleY - bubbleRadius / 2;
+  sitting = true;
+  velY = 0;
+  accY = 0.5;
+  bounceTarget = 5;
+  scene = 1;
+}
+
+function playLevel(){
+  moveBall();
+  movingBubble();
+  checkCollisions();
+  
+  myBubble();
+  myBall();
+  
+  //Score check
+  fill(0);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  text("Bounces: " + bounces + "/" + bounceTarget, 20, 20);
+}
+
 
 function changeScenes(){
-  // the first scene
-  if (scene1 === true) {
-    fill(255, 255, 0);
-    text ("Ready?!!", 100, 100);
+  if (scene === 1) {
+    //level 1
+    bubbleRadius = 100;
+    ballRadius = 50;
+    accY = 0.5;
+    playLevel();
   }
-  //the next scene
-  else if (scene2 === true){
-    fill("blue");
-    text("Nice", 200, 200);
+  else if (scene === 2) {
+    //level 2
+    fill(random(255), random(255), random(255));
+    bubbleRadius = 70;
+    ballRadius = 70;
+    accY = 0.7;
+    playLevel();
+  }
+  else if (scene === 3) {
+    fill(0, 50, 40);
+    textAlign(CENTER, CENTER);
+    textSize(32);
+    fill(0);
+    text ("Under Repairs", width/2, height/2);
   }
 }
 
-function myBubble() {
-  // fills bubble with yellow
-  fill("yellow");
-  circle(x, bubbleY, bubbleRadius);
 
-  //fills ball with black
+function myBubble(){
+  fill("yellow");
+  circle(bubbleX, bubbleY, bubbleRadius);
+}
+
+function myBall(){
   fill("black");
-  circle(x, ballY, ballRadius);
+  circle(ballX, ballY, ballRadius);
 }
 
 function moveBall() {
-  bubbleTop = bubbleY - bubbleRadius / 2;
+  velY += accY;
+  ballY += velY;
 
-  if (sitting) {
-    // Keep the ball stuck to the top of the bubble
-    ballY = bubbleTop - ballRadius / 2;
-    velY = 0;
-  } 
-  else {
-    // Gravity effect
-    velY += accY;
-    ballY += velY;
+  velX += random(-0.5, 0.2);
+  velX = constrain(velX, -5, 5);
+  ballX += velX;
+
+  if (ballX -ballRadius/2 < 0 || ballX + ballRadius/2 > width){
+    velX = -1;
+  }
+
+  if (ballY + ballRadius/2 >= height){
+    resetLevel();
+  }
+}
+
+function movingBubble() {
+  if (keyIsPressed === true) {
+    if (keyCode === UP_ARROW) {
+      bubbleY -= 5;
+    } 
+    else if (keyCode === DOWN_ARROW) {
+      bubbleY += 5;
+    } 
+    else if (keyCode === LEFT_ARROW) {
+      bubbleX -= 5;
+    } 
+    else if (keyCode === RIGHT_ARROW) {
+      bubbleX += 5;
+    }
+  }
+}
+
+function checkWin(){
+  if (ballY + ballRadius/2 >= height){
+    scene ++;
+    resetLevel();
+  }
+}
+
+function resetLevel(){
+  bubbleX = windowWidth/2;
+  bubbleY = windowHeight/3;
+  ballX= windowWidth/2;
+  ballY = 100;
+  velX = random(-2, 2);
+  velY = 0;
+  bounces = 0;
+}
+
+function checkCollisions(){
+  let d = dist(ballX, ballY, bubbleX, bubbleY);
+  //let bubbleTop = bubbleY - bubbleRadius/2;
+  
+  if (d < bubbleRadius/2 + ballRadius/2 && velY >0){
+    ballY = bubbleY - (bubbleRadius/2 + ballRadius/2);
+    velY = -0.8;
+    bounces++;
     
-    if (ballY + ballRadius / 2 >= height) {
-      ballY = height - ballRadius / 2;
-      velY = 0;
+    if (bounces >= bounceTarget){
+      scene++;
+      resetLevel();
     }
-
-    // Collision with bubble top
-    if (ballY + ballRadius / 2 >= bubbleTop) {
-      sitting = true;
-      ballY = bubbleTop - ballRadius / 2;
-      velY = 0;
-    }
-  }
-}
-
-function mouseWheel(event) {
-  bubbleY += event.delta * 0.1;
-  bubbleY = constrain(bubbleY, topLimit, bottomLimit);
-
-  // A fast scroll makes the ball fall
-  if (abs(event.delta) > 30) {
-    sitting = false;
-  }
-}
-
-function keyPressed(){
-  if (scene1 === true){
-    if (keyCode === RIGHT_ARROW){
-      value = 0;
-    }
-    scene
   }
 }
 
