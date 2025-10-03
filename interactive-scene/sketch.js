@@ -24,6 +24,7 @@ let scene;
 let bounceTarget;
 let bounces;
 let sceneMessage;
+let r, g, b;
 
 
 function setup() {
@@ -50,20 +51,20 @@ function initializeVariables() {
   bubbleX = windowWidth/2;
   bubbleDX = random(-2, 2);
   bubbleDY = random(-2, 2);
-  bubbleRadius = 100;
+  bubbleRadius = 50;
   ballRadius = 50;
   //ballY = bubbleY - bubbleRadius / 2 - ballRadius / 2;
   ballY = 50;
   ballDY = random(2, 4);
   ballDX = random(-3, 3);
-  ballX = width/2;
+  ballX = windowWidth/2;
   topLimit = bubbleRadius / 2;
   bottomLimit = height - bubbleRadius / 2;
   bubbleTop = bubbleY - bubbleRadius / 2;
   sitting = true;
   bounceTarget = 5;
   scene = 1;
-  let sceneMessage = 0;
+  sceneMessage = 0;
 }
 
 function playLevel(){
@@ -92,8 +93,8 @@ function changeScenes(){
   else if (scene === 2) {
     //level 2
     //fill(random(255), random(255), random(255));
-    background(20, 50, 100);
-    fill(255, 200, 255, 100);
+    background(20, 50, 50);
+    fill("#2FA3C9");
     noStroke();
     for (let i = 0; i < 10; i++){
 
@@ -109,7 +110,7 @@ function changeScenes(){
       textSize(28);
       fill(255);
       textAlign(CENTER, CENTER);
-      text("Wow!!!", windowWidth/2, windowHeight/2);
+      text("One Last Round!!!", windowWidth/2, windowHeight/2);
       sceneMessage++;
     }
 
@@ -122,11 +123,10 @@ function changeScenes(){
   }
   else if (scene === 3) {
     background(0, 30, 80);
-    //ll(0, 50, 40);
     textAlign(CENTER, CENTER);
     textSize(32);
     fill(255, 200, 255);
-    text ("Under Repairs", width/2, height/2);
+    text ("Nice Work!", windowWidth/2, windowHeight/2);
   }
 }
 
@@ -137,46 +137,56 @@ function myBubble(){
 }
 
 function myBall(){
-  fill(255, 255, 200, 180);
+  fill(r, g, b);
+  strokeWeight(4);
   circle(ballX, ballY, ballRadius + 10);
-  fill("black");
+  fill(r, g, b);
   circle(ballX, ballY, ballRadius);
 }
 
 function miniBubbles(){
-  for (let i = 0; i < 5; i++){
-    let bx = random(width);
-    let by = random(height);
+  for (let i = 0; i < 10; i++){
+    let bx = random(windowWidth);
+    let by = random(windowHeight);
     fill(255, 255, 255, 100);
     circle(bx, by, random(2, 5));
   }
 }
 
 function backScene(){
-  for (let y = 0; y < height; y++){
-    stroke(173, 216, 230, map(y, 0, height, 50, 200));
-    line(0, y, width, y);
+  //colorful and moving stroke
+  for (let sy = 0; sy < windowHeight; sy++){
+    stroke(170, 215, 220, map(sy, 0, windowHeight, 50, 200));
+    line(0, sy, windowWidth, sy);
   }
 }
 
 function moveBall() {
   ballX += ballDX;
   ballY += ballDY;
-
-  ballDX += random(-0.2, 0.2);
-  ballDX = constrain(ballDX, -5, 5);
+  
+  ballDX += random(-0.5, 0.5);
+  //ballDX = constrain(ballDX, -5, 5);
   // ballX += ballDX;
 
   if (ballX -ballRadius/2 < 0 || ballX + ballRadius/2 > windowWidth){
     ballDX *= -1;
+    randomColors();
   }
   if (ballY - ballRadius/2 < 0){
     ballDY *= -1;
+    randomColors();
   }
 
-  if (ballY + ballRadius/2 >= windowHeight){
+  if (ballY + ballRadius >= windowHeight){
     resetLevel();
   }
+}
+
+function randomColors(){
+  r = random(255);
+  g = random(255);
+  b = random(255);
 }
 
 function movingBubble() {
@@ -195,12 +205,12 @@ function movingBubble() {
     }
   }
 
-  bubbleX = constrain(bubbleX, bubbleRadius/2, windowWidth - bubbleRadius/2);
-  bubbleY = constrain(bubbleY, bubbleRadius/2, windowHeight - bubbleRadius/2);
+  bubbleX = constrain(bubbleX, bubbleRadius, windowWidth - bubbleRadius);
+  bubbleY = constrain(bubbleY, bubbleRadius, windowHeight - bubbleRadius);
 }
 
 function checkWin(){
-  if (ballY + ballRadius/2 >= height){
+  if (ballY + ballRadius >= height){
     scene ++;
     resetLevel();
   }
@@ -212,8 +222,8 @@ function resetLevel(){
 
   ballX= windowWidth/2;
   ballY = 100;
-  ballDX = random(-3, 3);
-  ballDY = random(2, 4);
+  ballDX = random(-2, 3);
+  ballDY = random(1, 3);
 
   bounces = 0;
 }
