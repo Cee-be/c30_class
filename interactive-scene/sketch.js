@@ -1,6 +1,6 @@
 //Interactive Scene Assignment
 //Ceberta Adum
-//date
+//3rd October, 2025
 
 //
 //
@@ -20,11 +20,12 @@ let bottomLimit;
 let bubbleTop;
 let sitting;
 let ballDY;
-let scene;
 let bounceTarget;
 let bounces;
-let sceneMessage;
 let r, g, b;
+let bx;
+let by;
+let baseBubbleRadius;
 
 
 function setup() {
@@ -36,7 +37,7 @@ function setup() {
 
 function draw() {
   backScene();
-  miniBubbles();
+  //miniBubbles();
 
   myBubble();
   moveBall();
@@ -46,14 +47,12 @@ function draw() {
 
 function initializeVariables() {
   x = windowWidth / 2;
-  //bubbleY = windowHeight / 4;
   bubbleY = windowHeight -100;
   bubbleX = windowWidth/2;
   bubbleDX = random(-2, 2);
   bubbleDY = random(-2, 2);
   bubbleRadius = 50;
   ballRadius = 50;
-  //ballY = bubbleY - bubbleRadius / 2 - ballRadius / 2;
   ballY = 50;
   ballDY = random(2, 4);
   ballDX = random(-3, 3);
@@ -65,6 +64,9 @@ function initializeVariables() {
   bounceTarget = 5;
   scene = 1;
   sceneMessage = 0;
+  bx = random(windowWidth);
+  by = random(windowHeight);
+  baseBubbleRadius = 100; 
 }
 
 function playLevel(){
@@ -83,39 +85,35 @@ function playLevel(){
 }
 
 
+//state variables
 function changeScenes(){
   if (scene === 1) {
     //level 1
-    bubbleRadius = 100;
+    textSize(20);
+    fill(150);
+    textAlign(CENTER, TOP);
+    text("Bounce the ball on bubble 5 times using the arrow keys!", windowWidth/2, 20);
+    baseBubbleRadius = 100;
+    bubbleRadius = baseBubbleRadius;
     ballRadius = 50;
     playLevel();
   }
   else if (scene === 2) {
     //level 2
-    //fill(random(255), random(255), random(255));
-    background(20, 50, 50);
-    fill("#2FA3C9");
+    //sparkly effect
+
+    background("#2FA3C9");
+    miniBubbles();
     noStroke();
-    for (let i = 0; i < 10; i++){
 
-      //stuff this in the setup
-      let bx = random(windowWidth);
-      let by = random(windowHeight);
-      //
-      circle(bx, by, random(5, 10));
-      //circle(50 + i*100, 100 + (i*30 % windowHeight), 20 + i*2);
-    }
+    textSize(20);
+    fill(150);
+    textAlign(CENTER, TOP);
+    text("One Last Round!! Can You Keep It Up 7 More Times??", windowWidth/2, 20);
+    text("Special!! Scroll to resize bubble", windowWidth/2, 50);
 
-    if (sceneMessage < 120){
-      textSize(28);
-      fill(255);
-      textAlign(CENTER, CENTER);
-      text("One Last Round!!!", windowWidth/2, windowHeight/2);
-      sceneMessage++;
-    }
-
- 
-    bubbleRadius = 70;
+    baseBubbleRadius = 70;
+    bubbleRadius = max(bubbleRadius, baseBubbleRadius);
     ballRadius = 70;
     bounceTarget = 7;
     playLevel();
@@ -123,10 +121,10 @@ function changeScenes(){
   }
   else if (scene === 3) {
     background(0, 30, 80);
-    textAlign(CENTER, CENTER);
-    textSize(32);
+    textAlign(CENTER, TOP);
+    textSize(28);
     fill(255, 200, 255);
-    text ("Nice Work!", windowWidth/2, windowHeight/2);
+    text ("That's All!! Nice Work!", windowWidth/2, windowHeight/2);
   }
 }
 
@@ -144,6 +142,8 @@ function myBall(){
   circle(ballX, ballY, ballRadius);
 }
 
+//for loop
+// Sparkly background (scene 2)
 function miniBubbles(){
   for (let i = 0; i < 10; i++){
     let bx = random(windowWidth);
@@ -153,6 +153,7 @@ function miniBubbles(){
   }
 }
 
+//for loop
 function backScene(){
   //colorful and moving stroke
   for (let sy = 0; sy < windowHeight; sy++){
@@ -189,6 +190,7 @@ function randomColors(){
   b = random(255);
 }
 
+//Keyboard Interaction
 function movingBubble() {
   if (keyIsPressed === true) {
     if (keyCode === UP_ARROW) {
@@ -207,6 +209,18 @@ function movingBubble() {
 
   bubbleX = constrain(bubbleX, bubbleRadius, windowWidth - bubbleRadius);
   bubbleY = constrain(bubbleY, bubbleRadius, windowHeight - bubbleRadius);
+}
+
+//Makes Bubble Smaller or Bigger
+function mouseWheel(event){
+  if (event.delta > 0) {
+    bubbleRadius -= 5;
+  } 
+  else {
+    bubbleRadius += 5;
+  }
+  bubbleRadius = constrain(bubbleRadius, 30, 150);
+  return false;
 }
 
 function checkWin(){
