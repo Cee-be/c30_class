@@ -1,0 +1,23 @@
+{
+  "name": "c30_class",
+  "version": "1.0.0",
+  "description": "CS30 Demos and Assignments",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cee-be/c30_class.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cee-be/c30_class/issues"
+  },
+  "homepage": "https://github.com/Cee-be/c30_class#readme",
+  "dependencies": {
+    "johnny-five": "^2.1.0"
+  }
+}

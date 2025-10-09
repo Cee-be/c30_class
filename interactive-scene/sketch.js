@@ -142,6 +142,7 @@ function myBall(){
   circle(ballX, ballY, ballRadius);
 }
 
+
 //for loop
 // Sparkly background (scene 2)
 function miniBubbles(){
