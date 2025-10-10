@@ -2,11 +2,21 @@ const { Board, Led } = require("johnny-five");
 const board = new Board();
 
 board.on("ready", () => {
-  const led = new Led(11);
+  const anode = new Led.RGB({
+    pins: {
+      red: 6,
+      green: 5,
+      blue: 3
+    },
+    isAnode: true
+  });
 
-  led.pulse();
+  // Add led to REPL (optional)
+  board.repl.inject({ anode });
 
-//   board.wait(10000, () => {
-//     led.stop().off();
-//   });
+  // Turn it on and set the initial color
+  anode.on();
+  anode.color("#FF0000");
+
+  anode.blink(1000);
 });
