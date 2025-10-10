@@ -7,3 +7,4 @@
 
 ## Assignments
 -[Interactive Scene](interactive-scene)
+-[Arrays and objects](arrays-objects)
