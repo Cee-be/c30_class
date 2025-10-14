@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Cee-be/c30_class#readme",
   "dependencies": {
-    "johnny-five": "^2.1.0"
+    "johnny-five": "^2.1.0",
+    "microbit": "^0.1.0"
   }
 }
