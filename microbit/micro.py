@@ -6,7 +6,12 @@
 # - describe what you did to take this project "above and beyond"
 
 
-import micro
+# Imports go at the top
+from microbit import *
+
+
+# Code in a 'while True:' loop repeats forever
 while True:
-    display.scroll("Hello")
+    display.show(Image.HEART)
     sleep(1000)
+    display.scroll('Ceberta')
