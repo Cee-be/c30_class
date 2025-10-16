@@ -12,5 +12,6 @@
         ".vscode": true,
         ".env": true
     },
-    "python.envFile": "${workspacefolder}/.env"
+    "python.envFile": "${workspacefolder}/.env",
+    "liveServer.settings.port": 5501
 }

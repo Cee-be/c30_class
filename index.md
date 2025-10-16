@@ -6,6 +6,7 @@
 - [Generative Arts](generative-arts)
 - [Perlin Noise](perlin-noise)
 - [Perlin Bubbles](perlin-bubbles)
+- [Terrian Generation](terrian-generation)
 
 ## Assignments
 -[Interactive Scene](interactive-scene)

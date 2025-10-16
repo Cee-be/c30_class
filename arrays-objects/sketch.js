@@ -8,7 +8,7 @@
 
 
 //Variables
-let myBubbles = [];
+//let myBubbles = [];
 let ballX;
 let ballY;
 let ballRadius;
@@ -30,6 +30,7 @@ function draw() {
   myBall();
   //bubbleLoop();
   myBubble();
+  moveBall();
 }
 
 //initializing variable
@@ -44,8 +45,8 @@ function initializingVariables(){
   bubbleY2 = 150;
   bubbleXTime = 1000;
   bubbleYTime = 2000;
-  bubbleX2Time = 1500;
-  bubbleY2Time = 3050;
+  bubbleX2Time = 50000;
+  bubbleY2Time = 3000;
   bubbleRadius = random(50, 100);
 }
 
@@ -65,7 +66,7 @@ function bubbleLoop(){
     fill("lightblue");
     noStroke();
     circle(bubble.x, bubble.y, bubbleRadius);
-    //circle(bubble.x, bubble.y, bubbleRadius);
+    circle(bubble.x, bubble.y, bubbleRadius);
   }
 }
 
@@ -75,24 +76,35 @@ function myBubble(){
   fill("lightblue");
   noStroke();
   circle(bubbleX, bubbleY, bubbleRadius);
-  //circle(bubble.x, bubble.y, bubbleRadius);
+  circle(bubbleX2, bubbleY2, bubbleRadius);
 }
 
 //using perlin noise
 function moveBubbles(){
-  let Bubbles = {
-    x: noise(time) * width,
-    y: noise(time + TIME_BUFFER) * height,
-    deltaTime: 0.01,
-  };
-  myBubbles.push(Bubbles);
-  // bubbleX = noise(bubbleXTime) * width;
-  // bubbleY = noise(bubbleYTime) * height;
-  // bubbleX2 = noise(bubbleX2Time) * width;
-  // bubbleY2 = noise(bubbleY2Time) * height;
-  // bubbleXTime += 0.03;
-  // bubbleYTime += 0.04;
-  // bubbleX2Time += 0.01;
-  // bubbleY2Time + 0.05;
+  bubbleX = noise(bubbleXTime) * width;
+  bubbleY = noise(bubbleYTime + TIME_BUFFER) * height;
+  bubbleX2 = noise(bubbleX2Time) * width;
+  bubbleY2 = noise(bubbleY2Time + TIME_BUFFER) * height;
+  bubbleXTime += 0.03;
+  bubbleYTime += 0.02;
+  bubbleX2Time += 0.06;
+  bubbleY2Time + 0.05;
 }
 
+//move ball
+function moveBall(){
+  if (keyIsPressed === true) {
+    if (keyCode === UP_ARROW) {
+      ballY -= 5;
+    } 
+    else if (keyCode === DOWN_ARROW) {
+      ballY += 5;
+    } 
+    else if (keyCode === LEFT_ARROW) {
+      ballX -= 5;
+    } 
+    else if (keyCode === RIGHT_ARROW) {
+      ballX += 5;
+    }
+  }
+};
