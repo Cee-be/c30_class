@@ -9,6 +9,7 @@
 
 //Variables
 //let myBubbles = [];
+const hit = false;
 let ballX;
 let ballY;
 let ballRadius;
@@ -31,6 +32,7 @@ function draw() {
   //bubbleLoop();
   myBubble();
   moveBall();
+  playerKilled();
 }
 
 //initializing variable
@@ -45,7 +47,7 @@ function initializingVariables(){
   bubbleY2 = 150;
   bubbleXTime = 1000;
   bubbleYTime = 2000;
-  bubbleX2Time = 50000;
+  bubbleX2Time = 5000;
   bubbleY2Time = 3000;
   bubbleRadius = random(50, 100);
 }
@@ -53,7 +55,7 @@ function initializingVariables(){
 //Creating ball/player
 function myBall(){
   fill("black");
-  circle(150, 50, 50);
+  circle(ballX, ballY, ballRadius);
 }
 
 //loop to move bubbles
@@ -107,4 +109,13 @@ function moveBall(){
       ballX += 5;
     }
   }
+
+  //moving within boundary
+  ballX = constrain(ballX, ballRadius , windowWidth - ballRadius);
+  ballY = constrain(ballY, ballRadius , windowHeight - ballRadius);
 };
+
+//Collosion detection
+function playerKilled(){
+  hit =
+}
