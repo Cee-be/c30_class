@@ -1,6 +1,5 @@
 // Project Title
-// -Sing: jellyfish scene using balls
-// Your Name
+// Ceberta Adum
 // Date
 //
 // Extra for Experts:
@@ -10,6 +9,7 @@
 //Variables
 //let myBubbles = [];
 const hit = false;
+const timerValue = 15;
 let ballX;
 let ballY;
 let ballRadius;
@@ -19,6 +19,7 @@ let bubbleX2;
 let bubbleY2;
 let bubbleRadius;
 let time;
+let scene;
 const TIME_BUFFER = 1000;
 
 function setup() {
@@ -32,12 +33,16 @@ function draw() {
   //bubbleLoop();
   myBubble();
   moveBall();
-  playerKilled();
+  //playerKilled();
+  Collisions();
+  changeScenes();
+  Timer();
 }
 
 //initializing variable
 function initializingVariables(){
   time = random(1000);
+  scene === 1;
   ballX = 50;
   ballY = 50;
   ballRadius = 50;
@@ -116,6 +121,43 @@ function moveBall(){
 };
 
 //Collosion detection
-function playerKilled(){
-  hit =
+function Collisions(){
+  let d = dist(ballX, ballY, bubbleX, bubbleY);
+  
+  if (d < bubbleRadius/2 + ballRadius/2 ){
+    text("Dead", windowWidth/2, 20);
+  }
+}
+
+//Changing Scenes
+function changeScenes(){
+  if (scene === 1) {
+    textSize(20);
+    fill(150);
+    textAlign(CENTER, TOP);
+    text("Survive!", windowWidth/2, 20);
+  }
+  else if (scene === 2) {
+    background("#2FA3C9");
+    textSize(20);
+    fill(150);
+    textAlign(CENTER, TOP);
+    text("Dead", windowWidth/2, 20);
+  }   
+}
+
+//Setting a timer
+function Timer(){
+  if (timerValue <= 15) { 
+    fill("black");
+    text(timerValue + " seconds", width / 8, height / 6); 
+  }
+
+  if (timerValue > 0) { 
+    timerValue--;
+  }
+ 
+  if (timerValue === 0) { 
+    text('Times Up!', width / 8, height / 6 + 15); 
+  }
 }
