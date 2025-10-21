@@ -20,6 +20,7 @@ let bubbleY2;
 let bubbleRadius;
 let time;
 let scene;
+//let scene3;
 const TIME_BUFFER = 1000;
 
 function setup() {
@@ -29,20 +30,22 @@ function setup() {
 
 function draw() {
   background(220);
-  myBall();
+  //Button();
+  //myBall();
   //bubbleLoop();
-  myBubble();
+  //myBubble();
   moveBall();
   //playerKilled();
   Collisions();
   changeScenes();
-  Timer();
+  //Timer();
 }
 
 //initializing variable
 function initializingVariables(){
   time = random(1000);
-  scene === 1;
+  scene = 0;
+  //scene3 === false;
   ballX = 50;
   ballY = 50;
   ballRadius = 50;
@@ -131,20 +134,35 @@ function Collisions(){
 
 //Changing Scenes
 function changeScenes(){
-  if (scene === 1) {
-    textSize(20);
-    fill(150);
-    textAlign(CENTER, TOP);
-    text("Survive!", windowWidth/2, 20);
+  if (scene === 0){
+    startButton();
   }
-  else if (scene === 2) {
-    background("#2FA3C9");
-    textSize(20);
-    fill(150);
-    textAlign(CENTER, TOP);
-    text("Dead", windowWidth/2, 20);
-  }   
+  else if (scene === 1) {
+    startGame();
+  }
+  // else if (scene === 3){
+  //   playerKilled();
+  // }
 }
+
+// Start game defined
+function startGame(){
+  scene === 1;
+  background("red");
+  myBall();
+  myBubble();
+  textSize(20);
+  fill(150);
+}
+
+// Start button defined
+function startButton(){
+  background("lightblue");
+  text("Survive", width/2.5, height/1.3);
+  textSize(20);
+  fill(150);
+}
+
 
 //Setting a timer
 function Timer(){
@@ -159,5 +177,13 @@ function Timer(){
  
   if (timerValue === 0) { 
     text('Times Up!', width / 8, height / 6 + 15); 
+  }
+}
+
+
+//Setting a start button
+function mousePressed(){
+  if (scene === 0){
+    startButton();
   }
 }
