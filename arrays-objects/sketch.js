@@ -17,32 +17,41 @@ let bubbleX;
 let bubbleY;
 let bubbleX2;
 let bubbleY2;
+let bubbleXTime;
+let bubbleYTime;
+let bubbleX2Time;
+let bubbleY2Time;
 let bubbleRadius;
 let time;
 let scene;
 //let scene3;
 const TIME_BUFFER = 1000;
+let width;
+let height;
+
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
   initializingVariables();
+  createCanvas(width, height);
 }
 
 function draw() {
   background(220);
   //Button();
-  //myBall();
+  myBall();
   //bubbleLoop();
-  //myBubble();
+  myBubble();
   moveBall();
   //playerKilled();
   Collisions();
-  changeScenes();
+  //changeScenes();
   //Timer();
 }
 
 //initializing variable
 function initializingVariables(){
+  width = windowWidth - 50;
+  height = windowHeight -50;
   time = random(1000);
   scene = 0;
   //scene3 === false;
@@ -119,16 +128,19 @@ function moveBall(){
   }
 
   //moving within boundary
-  ballX = constrain(ballX, ballRadius , windowWidth - ballRadius);
-  ballY = constrain(ballY, ballRadius , windowHeight - ballRadius);
+  ballX = constrain(ballX, ballRadius/2 , width - ballRadius/2);
+  ballY = constrain(ballY, ballRadius/2 , height - ballRadius/2);
 };
 
 //Collosion detection
 function Collisions(){
-  let d = dist(ballX, ballY, bubbleX, bubbleY);
+  let d = dist(ballX, ballY, bubbleX2, bubbleY2);
+  let d2 = dist(ballX, ballY, bubbleX, bubbleY);
   
-  if (d < bubbleRadius/2 + ballRadius/2 ){
-    text("Dead", windowWidth/2, 20);
+  if (d < bubbleRadius/2 + ballRadius/2 || d2 < bubbleRadius/2 + ballRadius/2){
+    text("Dead", width/2, height/2);
+    textSize(25);
+    fill(10);
   }
 }
 
@@ -147,20 +159,18 @@ function changeScenes(){
 
 // Start game defined
 function startGame(){
-  scene === 1;
   background("red");
   myBall();
   myBubble();
-  textSize(20);
-  fill(150);
+  //fill(150);
 }
 
 // Start button defined
 function startButton(){
   background("lightblue");
   text("Survive", width/2.5, height/1.3);
-  textSize(20);
-  fill(150);
+  textSize(25);
+  fill(10);
 }
 
 
@@ -184,6 +194,12 @@ function Timer(){
 //Setting a start button
 function mousePressed(){
   if (scene === 0){
-    startButton();
+    if (mouseX === width/2.5){
+      startPlay(); 
+    }
   }
+}
+
+function startPlay(){
+  scene === 1;
 }
