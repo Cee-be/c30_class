@@ -9,7 +9,7 @@
 //Variables
 //let myBubbles = [];
 const hit = false;
-const timerValue = 15;
+let timerValue = 20;
 let lastTime = 0;
 let ballX;
 let ballY;
@@ -32,8 +32,8 @@ let height;
 
 
 function setup() {
+  createCanvas(windowWidth, windowHeight);
   initializingVariables();
-  createCanvas(width, height);
 }
 
 function draw() {
@@ -51,8 +51,6 @@ function draw() {
 
 //initializing variable
 function initializingVariables(){
-  width = windowWidth - 50;
-  height = windowHeight -50;
   time = random(1000);
   scene = 0;
   //scene3 === false;
@@ -101,10 +99,12 @@ function myBubble(){
 
 //using perlin noise
 function moveBubbles(){
-  bubbleX = noise(bubbleXTime) * width;
-  bubbleY = noise(bubbleYTime + TIME_BUFFER) * height;
-  bubbleX2 = noise(bubbleX2Time) * width;
-  bubbleY2 = noise(bubbleY2Time + TIME_BUFFER) * height;
+  console.log(bubbleX);
+  bubbleX = noise(bubbleXTime) * windowWidth;
+  bubbleY = noise(bubbleYTime + TIME_BUFFER) * windowHeight;
+  console.log(bubbleX);
+  bubbleX2 = noise(bubbleX2Time) * windowWidth;
+  bubbleY2 = noise(bubbleY2Time + TIME_BUFFER) * windowHeight;
   bubbleXTime += 0.03;
   bubbleYTime += 0.02;
   bubbleX2Time += 0.06;
@@ -129,17 +129,17 @@ function moveBall(){
   }
 
   //moving within boundary
-  ballX = constrain(ballX, ballRadius/2 , width - ballRadius/2);
-  ballY = constrain(ballY, ballRadius/2 , height - ballRadius/2);
+  ballX = constrain(ballX, ballRadius/2 , windowWidth - ballRadius/2);
+  ballY = constrain(ballY, ballRadius/2 , windowHeight - ballRadius/2);
 };
 
 //Collosion detection
 function Collisions(){
-  let d = dist(ballX, ballY, bubbleX2, bubbleY2);
-  let d2 = dist(ballX, ballY, bubbleX, bubbleY);
+  let d = dist(ballX, ballY, bubbleX, bubbleY);
+  let d2 = dist(ballX, ballY, bubbleX2, bubbleY2);
   
   if (d < bubbleRadius/2 + ballRadius/2 || d2 < bubbleRadius/2 + ballRadius/2){
-    text("Dead", width/2, height/2);
+    text("Dead", windowWidth/2, windowHeight/2);
     textSize(25);
     fill(10);
   }
@@ -182,11 +182,12 @@ function Timer(){
     lastTime = millis(); 
   }
   fill("black");
-  textSize(25);
+  textSize(30);
   //textAlign(LEFT);
-  text(timerValue+" seconds", width/8, height/6);
-  if (timerValue <= 0) { 
-    text("Times Up!!", width/8, height/6 + 15);
+  text(timerValue +" seconds", windowWidth/15, windowHeight/10);
+  if (timerValue === 0) { 
+    text("Times Up!!", width/8, height/6 + 30);
+
   }
 }
 
