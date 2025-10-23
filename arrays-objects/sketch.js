@@ -10,6 +10,7 @@
 //let myBubbles = [];
 const hit = false;
 const timerValue = 15;
+let lastTime = 0;
 let ballX;
 let ballY;
 let ballRadius;
@@ -45,7 +46,7 @@ function draw() {
   //playerKilled();
   Collisions();
   //changeScenes();
-  //Timer();
+  Timer();
 }
 
 //initializing variable
@@ -176,17 +177,16 @@ function startButton(){
 
 //Setting a timer
 function Timer(){
-  if (timerValue <= 15) { 
-    fill("black");
-    text(timerValue + " seconds", width / 8, height / 6); 
-  }
-
-  if (timerValue > 0) { 
+  if (millis()-lastTime >= 1000) { 
     timerValue--;
+    lastTime = millis(); 
   }
- 
-  if (timerValue === 0) { 
-    text('Times Up!', width / 8, height / 6 + 15); 
+  fill("black");
+  textSize(25);
+  //textAlign(LEFT);
+  text(timerValue+" seconds", width/8, height/6);
+  if (timerValue <= 0) { 
+    text("Times Up!!", width/8, height/6 + 15);
   }
 }
 
