@@ -6,8 +6,10 @@
 // - describe what you did to take this project "above and beyond"
 
 
+
+
 //Variables
-//let myBubbles = [];
+let myBubbles = [];
 const hit = false;
 let timerValue = 20;
 let lastTime = 0;
@@ -16,44 +18,48 @@ let ballY;
 let ballRadius;
 let bubbleX;
 let bubbleY;
-let bubbleX2;
-let bubbleY2;
-let bubbleXTime;
-let bubbleYTime;
-let bubbleX2Time;
-let bubbleY2Time;
-let bubbleRadius;
+// let bubbleXTime;
+// let bubbleYTime;
+// let bubbleX2Time;
+// let bubbleY2Time;
+// let bubbleRadius;
 let time;
 let scene;
-//let scene3;
+let speedFactor;
 const TIME_BUFFER = 1000;
 let width;
 let height;
+let sizeFactor;
+let lastSpawnTime = 0;
+let safeDistance;
 
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   initializingVariables();
+  frameRate(60);
 }
 
 function draw() {
   background(220);
   //Button();
-  myBall();
+  //myBall();
+  spawnBubble();
   //bubbleLoop();
-  myBubble();
-  moveBall();
+  //myBubble();
+  //moveBall();
   //playerKilled();
-  Collisions();
-  //changeScenes();
-  Timer();
+  //Collisions();
+  changeScenes();
+  //Timer();
 }
 
 //initializing variable
 function initializingVariables(){
   time = random(1000);
   scene = 0;
-  //scene3 === false;
+  speedFactor = 1;
+  sizeFactor = 1;
   ballX = 50;
   ballY = 50;
   ballRadius = 50;
@@ -66,6 +72,8 @@ function initializingVariables(){
   bubbleX2Time = 5000;
   bubbleY2Time = 3000;
   bubbleRadius = random(50, 100);
+  lastSpawnTime = 0;
+  safeDistance = 100;
 }
 
 //Creating ball/player
@@ -74,42 +82,46 @@ function myBall(){
   circle(ballX, ballY, ballRadius);
 }
 
-//loop to move bubbles
-function bubbleLoop(){
-  for (let bubble of myBubbles){
-    bubble.x = noise(bubble.time) * width;
-    bubble.y = noise(bubble.time + bubble.buffer) * height;
-    bubble.time += bubble.deltaTime;
-  
-    fill("lightblue");
-    noStroke();
-    circle(bubble.x, bubble.y, bubbleRadius);
-    circle(bubble.x, bubble.y, bubbleRadius);
+//creating more bubbles
+function spawnBubble(){
+  let x, y;
+  do{
+    x = random(windowWidth);
+    y = random(windowHeight);
+  } while (dist(x, y, ballX, ballY) < safeDistance);
+
+  let b = {
+    x: x,
+    y: y,
+    radius: 20 + sizeFactor,
+    dx: random(-2, 2) * speedFactor,
+    dy: random(-2, 2) * speedFactor
+  };
+  myBubbles.push(b);
+}
+
+//Creating bubble/killer
+function moveBubbles(){
+  for (let b of myBubbles) {
+    b.x += b.dx;
+    b.y += b.dy;
+    if (b.x - b.radius < 0 || b.x + b.radius> windowWidth){ 
+      b.dx *= -1;
+    }
+    if (b.y - b.radius < 0 || b.y + b.radius > windowHeight){
+      b.dy  *= -1;
+    }
   }
 }
 
 //Creating bubble/killer
 function myBubble(){
-  moveBubbles();
   fill("lightblue");
   noStroke();
-  circle(bubbleX, bubbleY, bubbleRadius);
-  circle(bubbleX2, bubbleY2, bubbleRadius);
-}
-
-//using perlin noise
-function moveBubbles(){
-  console.log(bubbleX);
-  bubbleX = noise(bubbleXTime) * windowWidth;
-  bubbleY = noise(bubbleYTime + TIME_BUFFER) * windowHeight;
-  console.log(bubbleX);
-  bubbleX2 = noise(bubbleX2Time) * windowWidth;
-  bubbleY2 = noise(bubbleY2Time + TIME_BUFFER) * windowHeight;
-  bubbleXTime += 0.03;
-  bubbleYTime += 0.02;
-  bubbleX2Time += 0.06;
-  bubbleY2Time + 0.05;
-}
+  for (let b of myBubbles){
+    ellipse(b.x, b.y, b.radius*2);
+  }
+};
 
 //move ball
 function moveBall(){
@@ -135,27 +147,30 @@ function moveBall(){
 
 //Collosion detection
 function Collisions(){
-  let d = dist(ballX, ballY, bubbleX, bubbleY);
-  let d2 = dist(ballX, ballY, bubbleX2, bubbleY2);
-  
-  if (d < bubbleRadius/2 + ballRadius/2 || d2 < bubbleRadius/2 + ballRadius/2){
-    text("Dead", windowWidth/2, windowHeight/2);
-    textSize(25);
-    fill(10);
+  for (let b of myBubbles){
+    let d = dist(ballX, ballY, b.x, b.y);
+    if (d < b.radius/2 + ballRadius/2){
+      textSize(40);
+      text("Dead", windowWidth/2, windowHeight/2);
+      noLoop();
+      //fill("red");
+    }
   }
 }
 
 //Changing Scenes
 function changeScenes(){
-  if (scene === 0){
+  if (scene === 1){
+    moveBall();
+    myBall();
+    moveBubbles();
+    myBubble();
+    Collisions();
+    Timer();
+  } 
+  else{
     startButton();
   }
-  else if (scene === 1) {
-    startGame();
-  }
-  // else if (scene === 3){
-  //   playerKilled();
-  // }
 }
 
 // Start game defined
@@ -169,7 +184,7 @@ function startGame(){
 // Start button defined
 function startButton(){
   background("lightblue");
-  text("Survive", width/2.5, height/1.3);
+  text("Survive", windowWidth/2.5, windowHeight/1.3);
   textSize(25);
   fill(10);
 }
@@ -177,30 +192,37 @@ function startButton(){
 
 //Setting a timer
 function Timer(){
-  if (millis()-lastTime >= 1000) { 
-    timerValue--;
-    lastTime = millis(); 
+  if (frameCount % 60 === 0 && timerValue > 0) {
+    timerValue --;
+    console.log(timerValue);
+  }
+
+  if (millis()-lastSpawnTime >= TIME_BUFFER && timerValue > 0) { 
+    spawnBubble();
+    speedFactor += 0.05;
+    sizeFactor += 0.02;
+    lastSpawnTime = millis(); 
+  }
+  if (timerValue <=0){
+    textSize(40);
+    fill("green");
+    text("YOU SURVIVED!!, width/2, height/2");
+    noLoop();
   }
   fill("black");
   textSize(30);
-  //textAlign(LEFT);
-  text(timerValue +" seconds", windowWidth/15, windowHeight/10);
-  if (timerValue === 0) { 
-    text("Times Up!!", width/8, height/6 + 30);
-
-  }
+  textAlign(CENTER);
+  text(timerValue, windowWidth/2, 30);
 }
-
 
 //Setting a start button
 function mousePressed(){
   if (scene === 0){
-    if (mouseX === width/2.5){
-      startPlay(); 
-    }
+    scene = 1;
+    initializingVariables();
+    // if (mouseX > width/2.5 - 50 && mouseX < width/2.5 + 100 &&
+    //   mouseY > height/1.3 -30 && mouseY < height/1.3 + 30){
+    //   scene =1; 
+    // }
   }
-}
-
-function startPlay(){
-  scene === 1;
 }
