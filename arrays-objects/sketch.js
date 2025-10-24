@@ -18,11 +18,6 @@ let ballY;
 let ballRadius;
 let bubbleX;
 let bubbleY;
-// let bubbleXTime;
-// let bubbleYTime;
-// let bubbleX2Time;
-// let bubbleY2Time;
-// let bubbleRadius;
 let time;
 let scene;
 let speedFactor;
@@ -37,21 +32,17 @@ let safeDistance;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   initializingVariables();
-  frameRate(60);
 }
 
 function draw() {
   background(220);
-  //Button();
-  //myBall();
+  myBall();
   spawnBubble();
-  //bubbleLoop();
-  //myBubble();
-  //moveBall();
-  //playerKilled();
-  //Collisions();
-  changeScenes();
-  //Timer();
+  myBubble();
+  moveBall();
+  Collisions();
+  //changeScenes();
+  Timer();
 }
 
 //initializing variable
@@ -85,11 +76,6 @@ function myBall(){
 //creating more bubbles
 function spawnBubble(){
   let x, y;
-  do{
-    x = random(windowWidth);
-    y = random(windowHeight);
-  } while (dist(x, y, ballX, ballY) < safeDistance);
-
   let b = {
     x: x,
     y: y,
