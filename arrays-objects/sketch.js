@@ -1,214 +1,265 @@
-// Project Title
+// Arrays and Objects
 // Ceberta Adum
-// Date
+// 26th October, 2025
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
-
-
+// - using class to program with objects 
+// - using a micro:bit
 
 
 //Variables
 let myBubbles = [];
-const hit = false;
-let timerValue = 20;
+let timerValue = 15;
 let lastTime = 0;
-let ballX;
-let ballY;
-let ballRadius;
-let bubbleX;
-let bubbleY;
-let time;
-let scene;
-let speedFactor;
-const TIME_BUFFER = 1000;
 let width;
 let height;
-let sizeFactor;
-let lastSpawnTime = 0;
+let gameOver;
+let controlType;
+let keyboardBtn;
+let microbitBtn;
+let player;
+let cnv;
+let b;
 let safeDistance;
-
+let serial;
+let microbitData;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  //createCanvas(windowWidth, windowHeight);
+  initializingCanvas();
   initializingVariables();
+  setupControls();
+  spawnBubbles(15);
 }
 
 function draw() {
-  background(220);
-  myBall();
-  spawnBubble();
-  myBubble();
-  moveBall();
-  Collisions();
-  //changeScenes();
-  Timer();
+  background(100, 150, 200);
+  textAlign(CENTER, CENTER);
+  Choose();
+}
+
+//Choice
+function Choose(){
+  if (!controlType){
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Choose your control type:", width/2, height/2-60);
+    return;
+  }
+  else{
+    runGame();
+    displayTimer();
+  }
+}
+
+//initializing the canvas
+function initializingCanvas(){
+  screenDiv = document.getElementById("screen");
+  width = screenDiv.offsetWidth;
+  height = screenDiv.offsetHeight;
+  cnv = createCanvas(width, height);
+  cnv.parent("screen");
 }
 
 //initializing variable
 function initializingVariables(){
   time = random(1000);
-  scene = 0;
-  speedFactor = 1;
-  sizeFactor = 1;
-  ballX = 50;
-  ballY = 50;
-  ballRadius = 50;
-  bubbleX = 100;
-  bubbleY = 100;
-  bubbleX2 = 150;
-  bubbleY2 = 150;
-  bubbleXTime = 1000;
-  bubbleYTime = 2000;
-  bubbleX2Time = 5000;
-  bubbleY2Time = 3000;
-  bubbleRadius = random(50, 100);
-  lastSpawnTime = 0;
-  safeDistance = 100;
+  player = new Ball(width/2, height/2);
+  safeDistance = 70;
+  gameOver = false;
 }
 
-//Creating ball/player
-function myBall(){
-  fill("black");
-  circle(ballX, ballY, ballRadius);
+//Control choice
+function setupControls(){
+  const keyboardBtn = select("#keyboard-btn");
+  const microbitBtn = select("#microbit-btn");
+
+  keyboardBtn.mousePressed(() => {
+    controlType = "keyboard";
+    startGame();
+  });
+
+  microbitBtn.mousePressed(() => {
+    controlType = "microbit";
+    startGame();
+    initMicrobit();
+  });
+}
+
+//Microbit setup
+function initMicrobit(){
+  serial = new p5.SerialPort();
+  serial.on('connected', () => console.log("Serial connected"));
+  serial.on('open', () => console.log("Serial port open"));
+  serial.on("data", serialEvent);
+}
+
+//defining function in microbit setup
+function serialEvent(){
+  const data = serial.readLine();
+  if (data) {
+    microbitData = data.trim();
+  }
+}
+
+//Starting the after choice made
+function startGame(){
+  document.getElementById("input-type").style.display = "none";
+  gameOver = false;
+  player.x = width/2;
+  player.y = height/2;
+  timerValue = 15;
+  lastTime =millis();
 }
 
 //creating more bubbles
-function spawnBubble(){
-  let x, y;
-  let b = {
-    x: x,
-    y: y,
-    radius: 20 + sizeFactor,
-    dx: random(-2, 2) * speedFactor,
-    dy: random(-2, 2) * speedFactor
-  };
-  myBubbles.push(b);
+function spawnBubbles(num){
+  for (let i =0; i< num; i++){
+    let b;
+    let tries = 0;
+    do{
+      b = new Bubble(random(width), random(height));
+      tries++;
+      if (tries > 100) {
+        break;
+      }
+    } 
+    while 
+    (dist(b.x, b.y, player.x, player.y) < safeDistance);
+    myBubbles.push(b);
+  }
+}
+
+//Using class to create ball/player
+class Ball{
+  constructor(){
+    this.x = width/2;
+    this.y = height/2;
+    this.r = 15;
+    this.speed = 5;
+  }
+
+  update(){
+    // moving ball/player with arrow keys
+    if (controlType === "keyboard"){
+      if (keyIsDown(UP_ARROW)) {
+        this.y -= this.speed;
+      } 
+      if (keyIsDown(DOWN_ARROW)) {
+        this.y += this.speed;
+      } 
+      if (keyIsDown(LEFT_ARROW)) {
+        this.x -= this.speed;
+      } 
+      if (keyIsDown(RIGHT_ARROW)) {
+        this.x += this.speed;
+      }
+    }
+
+    else if (controlType === "microbit"){
+      if (microbitData === "UP") {
+        this.y -= this.speed;
+      } 
+      if (microbitData === "DOWN") {
+        this.y += this.speed;
+      } 
+      if (microbitData === "LEFT") {
+        this.x -= this.speed;
+      } 
+      if (microbitData === "RIGHT") {
+        this.x += this.speed;
+      }
+      microbitData = "";
+    }
+
+    //moving within boundary
+    this.x = constrain(this.x, this.r/2 , width - this.r/2);
+    this.y = constrain(this.y, this.r/2 , height - this.r/2);
+  }
+
+  //appearance
+  display(){
+    fill(100, 200, 255);
+    noStroke();
+    ellipse(this.x, this.y, this.r * 2);
+  }
 }
 
 //Creating bubble/killer
-function moveBubbles(){
-  for (let b of myBubbles) {
-    b.x += b.dx;
-    b.y += b.dy;
-    if (b.x - b.radius < 0 || b.x + b.radius> windowWidth){ 
-      b.dx *= -1;
+class Bubble{
+  constructor(x, y){
+    this.x = x;
+    this.y = y;
+    this.r = random(30, 50);
+    this.xSpeed = random(2, -2);
+    this.ySpeed = random(2, -2);
+  }
+
+  move() {
+    this.x += this.xSpeed;
+    this.y += this.ySpeed;
+
+    if (this.x < this.r || this.x > width - this.r) {
+      this.xSpeed *= -1;
     }
-    if (b.y - b.radius < 0 || b.y + b.radius > windowHeight){
-      b.dy  *= -1;
+    if (this.y < this.r || this.y > height - this.r) {
+      this.ySpeed *= -1;
     }
+  }
+
+  display(){
+    fill(255, 255, 255, 150);
+    noStroke();
+    ellipse(this.x, this.y, this.r *2);
   }
 }
 
-//Creating bubble/killer
-function myBubble(){
-  fill("lightblue");
-  noStroke();
-  for (let b of myBubbles){
-    ellipse(b.x, b.y, b.radius*2);
-  }
-};
-
-//move ball
-function moveBall(){
-  if (keyIsPressed === true) {
-    if (keyCode === UP_ARROW) {
-      ballY -= 5;
-    } 
-    else if (keyCode === DOWN_ARROW) {
-      ballY += 5;
-    } 
-    else if (keyCode === LEFT_ARROW) {
-      ballX -= 5;
-    } 
-    else if (keyCode === RIGHT_ARROW) {
-      ballX += 5;
-    }
-  }
-
-  //moving within boundary
-  ballX = constrain(ballX, ballRadius/2 , windowWidth - ballRadius/2);
-  ballY = constrain(ballY, ballRadius/2 , windowHeight - ballRadius/2);
-};
-
-//Collosion detection
-function Collisions(){
-  for (let b of myBubbles){
-    let d = dist(ballX, ballY, b.x, b.y);
-    if (d < b.radius/2 + ballRadius/2){
-      textSize(40);
-      text("Dead", windowWidth/2, windowHeight/2);
-      noLoop();
-      //fill("red");
-    }
-  }
-}
 
 //Changing Scenes
-function changeScenes(){
-  if (scene === 1){
-    moveBall();
-    myBall();
-    moveBubbles();
-    myBubble();
-    Collisions();
-    Timer();
-  } 
-  else{
-    startButton();
+function runGame(){
+  if (!gameOver) {
+    player.update();
+    player.display();
+
+    for (let bubble of myBubbles) {
+      bubble.move();
+      bubble.display();
+
+      if (dist(player.x, player.y, bubble.x, bubble.y) < player.r + bubble.r){
+        gameOver = true;
+      }
+    }
+
+    //Show text
+    fill(255);
+    textSize(20);
+    textAlign(LEFT, TOP);
+    text("Survive!", 10, 10);
+  }
+  else {
+    fill(255, 80, 80);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("GameOver!", width/2, height/2);
+    noLoop();
   }
 }
 
-// Start game defined
-function startGame(){
-  background("red");
-  myBall();
-  myBubble();
-  //fill(150);
-}
-
-// Start button defined
-function startButton(){
-  background("lightblue");
-  text("Survive", windowWidth/2.5, windowHeight/1.3);
-  textSize(25);
-  fill(10);
-}
-
-
 //Setting a timer
-function Timer(){
+function displayTimer(){
   if (frameCount % 60 === 0 && timerValue > 0) {
     timerValue --;
     console.log(timerValue);
   }
-
-  if (millis()-lastSpawnTime >= TIME_BUFFER && timerValue > 0) { 
-    spawnBubble();
-    speedFactor += 0.05;
-    sizeFactor += 0.02;
-    lastSpawnTime = millis(); 
-  }
-  if (timerValue <=0){
-    textSize(40);
+  if (timerValue <= 0 && !gameOver){
+    textSize(20);
     fill("green");
-    text("YOU SURVIVED!!, width/2, height/2");
+    text("YOU SURVIVED!!", width/2, height/2);
     noLoop();
   }
   fill("black");
   textSize(30);
   textAlign(CENTER);
-  text(timerValue, windowWidth/2, 30);
-}
-
-//Setting a start button
-function mousePressed(){
-  if (scene === 0){
-    scene = 1;
-    initializingVariables();
-    // if (mouseX > width/2.5 - 50 && mouseX < width/2.5 + 100 &&
-    //   mouseY > height/1.3 -30 && mouseY < height/1.3 + 30){
-    //   scene =1; 
-    // }
-  }
+  text(timerValue, width/2, 30);
 }
