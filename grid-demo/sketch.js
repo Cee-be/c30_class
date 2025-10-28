@@ -70,9 +70,9 @@ function generateRandomGrid(cols, rows) {
         newGrid[y].push(0);
       }
       else {
-        newGrid[y].push;
+        newGrid[y].push(1);
       }
     }
-    newGrid[x].push;
   }
+  return newGrid();
 }

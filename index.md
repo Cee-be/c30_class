@@ -7,6 +7,8 @@
 - [Perlin Noise](perlin-noise)
 - [Perlin Bubbles](perlin-bubbles)
 - [Terrian Generation](terrian-generation)
+- [Grid Demo](grid-demo)
+- [Rectangle neighbours](rectangle-neighbours)
 
 ## Assignments
 -[Interactive Scene](interactive-scene)
