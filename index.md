@@ -9,6 +9,7 @@
 - [Terrian Generation](terrian-generation)
 - [Grid Demo](grid-demo)
 - [Rectangle neighbours](rectangle-neighbours)
+- [Game of life](game-of-life)
 
 ## Assignments
 -[Interactive Scene](interactive-scene)
