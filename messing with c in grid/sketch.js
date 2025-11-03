@@ -1,9 +1,10 @@
 // Rectangle Neighbours 2d Array Demo
 
-const CELL_SIZE = 50;
+const CELL_SIZE = 100;
 const OPEN_TILE = 0;
 const IMPOSSIBLE = 1;
 const PLAYER = 9;
+const PLAYER2 = 8;
 let grid;
 let rows;
 let cols;
@@ -11,6 +12,11 @@ let thePlayer = {
   //image: fireboy,
   x: 0,
   y: 0,
+};
+let thePlayer2 = {
+  //image: fireboy,
+  x: 0,
+  y: 3,
 };
 let playerImg1;
 let playerImg2;
@@ -23,6 +29,7 @@ function setup() {
 
   //add player to grid
   grid[thePlayer.y][thePlayer.x] = PLAYER;
+  grid[thePlayer2.y][thePlayer2.x] = PLAYER2;
 }
 
 function draw() {
@@ -32,7 +39,7 @@ function draw() {
 
 function preload(){
   playerImg1 = loadImage("fireboy.png");
-  playerImg2 = loadImage("fireboy.png");
+  playerImg2 = loadImage("watergirl.png");
 }
 
 function mousePressed() {
@@ -62,17 +69,17 @@ function toggleCell(x, y) {
 }
 
 function keyPressed() {
-  if (key === "r") {
-    grid = generateRandomGrid(cols, rows);
-  }
-  else if (key === "e") {
-    grid = generateEmptyGrid(cols, rows);
-  }
-  else if (key === "w"){
-    movePlayer(thePlayer.x, thePlayer.y - 1);
+  // if (key === "r") {
+  //   grid = generateRandomGrid(cols, rows);
+  // }
+  // else if (key === "e") {
+  //   grid = generateEmptyGrid(cols, rows);
+  // }
+  if (key === "w"){
+    thePlayer.y - 1;
   }
   else if (key === "s"){
-    movePlayer(thePlayer.x, thePlayer.y + 1);
+    thePlayer.y + 1;
   }
   else if (key === "d"){
     movePlayer(thePlayer.x + 1, thePlayer.y);
@@ -85,18 +92,18 @@ function keyPressed() {
 function movePlayer(x, y){
   if (x >= 0 && x < cols && y >- 0 && y <= rows && grid[y][x] === OPEN_TILE){
     //pre pos
-    let oldX = thePlayer.x;
-    let oldY = thePlayer.y;
+    //let oldX = thePlayer.x;
+    //let oldY = thePlayer.y;
   
     //moving player locat
     thePlayer.x = x;
     thePlayer.y = y;
   
     //put player on grid
-    grid[thePlayer.y][thePlayer.x = x] = PLAYER;
+    //grid[thePlayer.y][thePlayer.x = x] = PLAYER;
   
     //reset old spot
-    grid[oldY][oldX] = OPEN_TILE;
+    //grid[oldY][oldX] = OPEN_TILE;
 
   }
 }
@@ -114,10 +121,12 @@ function displayGrid() {
       }
       else if (grid[y][x] === PLAYER){
         image(playerImg1, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        // fill("red");
+      }
+      else if (grid[y][x] === PLAYER2){
         image(playerImg2, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         // fill("red");
       }
-      
     }
   }
 }

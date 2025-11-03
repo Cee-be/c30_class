@@ -1,8 +1,8 @@
-// Rectangle Neighbours 2d Array Demo
+// Character in Grid 2d Array Demo
 
 const CELL_SIZE = 50;
 const OPEN_TILE = 0;
-const IMPOSSIBLE = 1;
+const IMPASSIBLE = 1;
 const PLAYER = 9;
 let grid;
 let rows;
@@ -11,6 +11,14 @@ let thePlayer = {
   x: 0,
   y: 0,
 };
+let grassImg;
+let pathImg;
+
+function preload() {
+  grassImg = loadImage("grass.png");
+  pathImg = loadImage("paving.png");
+}
+
 
 function setup() {
   createCanvas(windowWidth * 0.9, windowHeight * 0.9);
@@ -23,7 +31,7 @@ function setup() {
 }
 
 function draw() {
-  background("beige");
+  background("blue");
   displayGrid();
 }
 
@@ -33,21 +41,15 @@ function mousePressed() {
 
   //self
   toggleCell(x ,y);
-
-  //neighbours
-  toggleCell(x + 1, y);
-  toggleCell(x - 1, y);
-  toggleCell(x, y - 1);
-  toggleCell(x, y + 1);
 }
 
 function toggleCell(x, y) {
   //make sure the cell you're toggling actually exists!
   if (x >= 0 && x < cols && y >= 0 && y < rows) {
     if (grid[y][x] === OPEN_TILE) {
-      grid[y][x] = IMPOSSIBLE;
+      grid[y][x] = IMPASSIBLE;
     }
-    else if (grid[y][x] === IMPOSSIBLE) {
+    else if (grid[y][x] === IMPASSIBLE) {
       grid[y][x] = OPEN_TILE;
     }
   }
@@ -60,36 +62,35 @@ function keyPressed() {
   else if (key === "e") {
     grid = generateEmptyGrid(cols, rows);
   }
-  else if (key === "w"){
+  else if (key === "w") {
     movePlayer(thePlayer.x, thePlayer.y - 1);
   }
-  else if (key === "s"){
+  else if (key === "s") {
     movePlayer(thePlayer.x, thePlayer.y + 1);
   }
-  else if (key === "d"){
+  else if (key === "d") {
     movePlayer(thePlayer.x + 1, thePlayer.y);
   }
-  else if (key === "a"){
+  else if (key === "a") {
     movePlayer(thePlayer.x - 1, thePlayer.y);
   }
 }
 
-function movePlayer(x, y){
-  if (x >= 0 && x < cols && y >- 0 && y <= rows && grid[y][x] === OPEN_TILE){
-    //pre pos
+function movePlayer(x, y) {
+  if (x >= 0 && x < cols && y >= 0 && y < rows && grid[y][x] === OPEN_TILE) {
+    //previous position
     let oldX = thePlayer.x;
     let oldY = thePlayer.y;
   
-    //moving player locat
+    //moving the player location
     thePlayer.x = x;
     thePlayer.y = y;
   
     //put player on grid
-    grid[thePlayer.y][thePlayer.x = x] = PLAYER;
+    grid[thePlayer.y][thePlayer.x] = PLAYER;
   
-    //reset old spot
+    //reset old spot to be open tile
     grid[oldY][oldX] = OPEN_TILE;
-
   }
 }
 
@@ -97,15 +98,17 @@ function displayGrid() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       if (grid[y][x] === OPEN_TILE) {
-        fill("white");
+        // fill("white");
+        image(pathImg, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
       }
-      else if (grid[y][x] === IMPOSSIBLE) {
-        fill("black");
+      else if (grid[y][x] === IMPASSIBLE) {
+        // fill("black");
+        image(grassImg, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
       }
-      else if (grid[y][x] === PLAYER){
-        fill ("red");
+      else if (grid[y][x] === PLAYER) {
+        fill("red");
+        square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
       }
-      square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
     }
   }
 }
@@ -120,7 +123,7 @@ function generateRandomGrid(cols, rows) {
         newGrid[y].push(OPEN_TILE);
       }
       else {
-        newGrid[y].push(IMPOSSIBLE);
+        newGrid[y].push(IMPASSIBLE);
       }
     }
   }
@@ -132,7 +135,7 @@ function generateEmptyGrid(cols, rows) {
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      newGrid[y].push(0);
+      newGrid[y].push(OPEN_TILE);
     }
   }
   return newGrid;
