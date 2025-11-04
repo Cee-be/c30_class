@@ -1,6 +1,6 @@
 // Rectangle Neighbours 2d Array Demo
 
-const CELL_SIZE = 100;
+const CELL_SIZE = 200;
 const OPEN_TILE = 0;
 const IMPOSSIBLE = 1;
 const PLAYER = 9;
@@ -9,12 +9,10 @@ let grid;
 let rows;
 let cols;
 let thePlayer = {
-  //image: fireboy,
   x: 0,
   y: 0,
 };
 let thePlayer2 = {
-  //image: fireboy,
   x: 0,
   y: 3,
 };
@@ -42,19 +40,19 @@ function preload(){
   playerImg2 = loadImage("watergirl.png");
 }
 
-function mousePressed() {
-  let x = Math.floor(mouseX/CELL_SIZE);
-  let y = Math.floor(mouseY/CELL_SIZE);
+// function mousePressed() {
+//   let x = Math.floor(mouseX/CELL_SIZE);
+//   let y = Math.floor(mouseY/CELL_SIZE);
 
-  //self
-  toggleCell(x ,y);
+//   //self
+//   toggleCell(x ,y);
 
-  //neighbours
-  toggleCell(x + 1, y);
-  toggleCell(x - 1, y);
-  toggleCell(x, y - 1);
-  toggleCell(x, y + 1);
-}
+//   //neighbours
+//   toggleCell(x + 1, y);
+//   toggleCell(x - 1, y);
+//   toggleCell(x, y - 1);
+//   toggleCell(x, y + 1);
+// }
 
 function toggleCell(x, y) {
   //make sure the cell you're toggling actually exists!
@@ -81,6 +79,9 @@ function keyPressed() {
   else if (key === "s"){
     thePlayer.y + 1;
   }
+  else if (keyCode === DOWN_ARROW){
+    thePlayer.y + 1;
+  }
   else if (key === "d"){
     movePlayer(thePlayer.x + 1, thePlayer.y);
   }
@@ -92,18 +93,18 @@ function keyPressed() {
 function movePlayer(x, y){
   if (x >= 0 && x < cols && y >- 0 && y <= rows && grid[y][x] === OPEN_TILE){
     //pre pos
-    //let oldX = thePlayer.x;
-    //let oldY = thePlayer.y;
+    let oldX = thePlayer.x;
+    let oldY = thePlayer.y;
   
     //moving player locat
     thePlayer.x = x;
     thePlayer.y = y;
   
     //put player on grid
-    //grid[thePlayer.y][thePlayer.x = x] = PLAYER;
+    grid[thePlayer.y][thePlayer.x = x] = PLAYER;
   
     //reset old spot
-    //grid[oldY][oldX] = OPEN_TILE;
+    grid[oldY][oldX] = OPEN_TILE;
 
   }
 }
