@@ -14,7 +14,7 @@ let thePlayer = {
 };
 let thePlayer2 = {
   x: 0,
-  y: 3,
+  y: 2,
 };
 let playerImg1;
 let playerImg2;
@@ -67,45 +67,43 @@ function toggleCell(x, y) {
 }
 
 function keyPressed() {
-  // if (key === "r") {
-  //   grid = generateRandomGrid(cols, rows);
-  // }
-  // else if (key === "e") {
-  //   grid = generateEmptyGrid(cols, rows);
-  // }
+  //fireboy movement
   if (key === "w"){
-    thePlayer.y - 1;
+    movePlayer(thePlayer, thePlayer.x, thePlayer.y - 1);
   }
   else if (key === "s"){
-    thePlayer.y + 1;
-  }
-  else if (keyCode === DOWN_ARROW){
-    thePlayer.y + 1;
+    movePlayer(thePlayer, thePlayer.x, thePlayer.y + 1);
   }
   else if (key === "d"){
-    movePlayer(thePlayer.x + 1, thePlayer.y);
+    movePlayer(thePlayer, thePlayer.x + 1, thePlayer.y);
   }
   else if (key === "a"){
-    movePlayer(thePlayer.x - 1, thePlayer.y);
+    movePlayer(thePlayer, thePlayer.x - 1, thePlayer.y);
   }
+
+  //watergirl movement
+  
 }
 
-function movePlayer(x, y){
-  if (x >= 0 && x < cols && y >- 0 && y <= rows && grid[y][x] === OPEN_TILE){
-    //pre pos
-    let oldX = thePlayer.x;
-    let oldY = thePlayer.y;
-  
-    //moving player locat
-    thePlayer.x = x;
-    thePlayer.y = y;
-  
-    //put player on grid
-    //grid[thePlayer.y][thePlayer.x = x] = PLAYER;
-  
-    //reset old spot
-    grid[oldY][oldX] = OPEN_TILE;
+function movePlayer(player, newX, newY){
+  if (newX < 0 || newX >= cols || newY < 0 || newY >= rows){
+    return;
+  }
 
+  if (grid[newY][newX] === OPEN_TILE) {
+    grid[player.y][player.x] = OPEN_TILE;
+
+    //moving player locat
+    thePlayer.x = newX;
+    thePlayer.y = newY;
+  
+    //mark new spot
+    if (player === thePlayer){
+      grid[player.y][player.x] = PLAYER;
+    } 
+    else {
+      grid[player.y][player.x] = PLAYER2;
+    }
   }
 }
 
