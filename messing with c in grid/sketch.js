@@ -110,20 +110,33 @@ function movePlayer(player, newX, newY){
 function displayGrid() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
-      if (grid[y][x] === OPEN_TILE) {
-        fill("white");
-        square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
+      let cell = grid[y][x];
+      let xpos = x * CELL_SIZE;
+      let ypos = y * CELL_SIZE; 
+
+      if (cell === OPEN_TILE){
+        fill("beige");
       }
-      else if (grid[y][x] === IMPOSSIBLE) {
+      else if (cell === IMPOSSIBLE){
         fill("black");
-        square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
       }
-      else if (grid[y][x] === PLAYER){
-        image(playerImg1, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      else if (cell === 2){
+        fill("red");
+      }
+      else if (cell === 3){
+        fill("blue");
+      }
+      else if (cell === 4){
+        fill("green");
+      }
+      rect(xpos, ypos, CELL_SIZE, CELL_SIZE);
+
+      if (cell === PLAYER){
+        image(playerImg1, xpos, ypos, CELL_SIZE, CELL_SIZE);
         // fill("red");
       }
-      else if (grid[y][x] === PLAYER2){
-        image(playerImg2, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      else if (cell === PLAYER2){
+        image(playerImg2, xpos, ypos, CELL_SIZE, CELL_SIZE);
         // fill("red");
       }
     }
@@ -131,10 +144,11 @@ function displayGrid() {
 }
 
 function generateRandomGrid(cols, rows) {
-  let newGrid = [];
+  let grid = [];
   for (let y = 0; y < rows; y++) {
-    newGrid.push([]);
+    grid[y] = [];
     for (let x = 0; x < cols; x++) {
+      let r = random(1);
       //pick 0 or 1 randomly
       if (random(100) < 50) {
         newGrid[y].push(OPEN_TILE);
