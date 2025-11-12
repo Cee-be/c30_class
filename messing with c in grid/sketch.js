@@ -13,6 +13,7 @@ const DOOR_FIRE = 6;
 const DOOR_WATER = 7;
 const PLATFORM = 5;
 const EMPTY = 0;
+let BUTTON_PRESSED;
 
 let grid = [
   [6, 7, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -52,6 +53,8 @@ let watergirl = {
   onGround: false
 };
 
+let keys = {};
+
 let playerImg1;
 let playerImg2;
 let tile;
@@ -77,6 +80,7 @@ function preload(){
 
   wall = loadImage("wall.png");
   wall_btn = loadImage("wallBtn.png");
+  btn_pressed = loadImage("btn_pressed.png");
 }
 
 function setup() {
@@ -90,16 +94,18 @@ function setup() {
 function draw() {
   image(gameBackground, 0, 0, width, height);
   displayGrid();
+  playerMovement();
+  playerButtonActivate();
   
-  updatePlayer(fireboy);
-  updatePlayer(watergirl);
+  updatePlayer(fireboy, LAVA, WATER);
+  updatePlayer(watergirl, WATER, LAVA);
 
   //players
   image(playerImg1, fireboy.x, fireboy.y, fireboy.w, fireboy.h);
   image(playerImg2, watergirl.x, watergirl.y, watergirl.w, watergirl.h);
 }
 
-function updatePlayer(p){
+function updatePlayer(p, safeTile, deadlyTile){
   // gravity
   p.vy += 0.5;
   p.y += p.vy;
@@ -108,44 +114,132 @@ function updatePlayer(p){
   let gridX = Math.floor(p.x / CELL_SIZE);
   let gridY = Math.floor((p.y + p.h)/ CELL_SIZE);
 
-  if (grid[gridY] && grid[gridY][gridX] === PLATFORM){
+  //hazard detection
+  if (gridY < 0 || gridY >= rows || gridX < 0 || gridX >= cols){
+    return;
+  }
+    
+  let currentTile = grid[gridY][gridX];
+
+  if (currentTile === PLATFORM || currentTile === safeTile){
     p.vy = 0;
     p.onGround = true;
     p.y = gridY * CELL_SIZE - p.h;
-  } 
-  else {
+  }
+  else{
     p.onGround = false;
+  }
+  if (currentTile === deadlyTile || currentTile === GREEN){
+    p.x = 0;
+    p.vy = 0;
+    p.y = 700;
   }
 }
 
+
 function keyPressed() {
+  keys[key.toLowerCase()] = true;
+  keys[keyCode] = true;
+}
+
+function keyReleased(){
+  keys[key.toLowerCase()] = false;
+  keys[keyCode] = false;
+}
+
+function playerMovement(){
+
+  if (playerMoveTo(fireboy, fireboy.x, fireboy.y + fireboy.vy)){
+    fireboy.y += fireboy.vy;
+  }
+  else{
+    fireboy.vy = 0;
+    fireboy.onGround = true;
+  }
+  
   //fireboy movement
-  if (key === "w" && fireboy.onGround){
+  if (keys["w"] && fireboy.onGround){
     fireboy.vy = -10;
     fireboy.onGround = false;
   }
-  else if (key === "d"){
-    fireboy.x += 20;
+  if (keys["d"] && playerMoveTo(fireboy, fireboy.x + 4, fireboy.y)){
+    fireboy.x += 4;
   }
-  else if (key === "a"){
-    fireboy.x -= 20;;
+  if (keys["a"] && playerMoveTo(fireboy, fireboy.x - 4, fireboy.y)){
+    fireboy.x -= 4;;
   }
 
   //watergirl movement
-  if (keyCode === UP_ARROW && watergirl.onGround){
+  if (keys[UP_ARROW] && watergirl.onGround){
     watergirl.vy = -10;
     watergirl.onGround = false;
   }
-  else if (keyCode ===RIGHT_ARROW){
-    watergirl.x += 20;
+  if (keys[RIGHT_ARROW] && playerMoveTo(watergirl, watergirl.x + 4, watergirl.y)){
+    watergirl.x += 4;
   }
-  else if (keyCode === LEFT_ARROW){
-    watergirl.x -= 20;
+  if (keys[LEFT_ARROW] && playerMoveTo(watergirl, watergirl.x - 4, watergirl.y)){
+    watergirl.x -= 4;
   }
+}
+
+function playerOnTile(player, tileType){
+  let gridX = Math.floor((player.x + player.w/2)/ CELL_SIZE);
+  let gridY = Math.floor((player.y + player.h/2)/ CELL_SIZE);
+  return grid[gridY] && grid[gridY][gridX] === tileType;
+}
+
+function playerButtonActivate(){
+  for (let y = 0; y < rows; y++){
+    for (let x = 0; x < cols; x++){
+      if (grid[y][x] === WALL_BTN){
+        if (playerOnTile(fireboy, WALL_BTN) || playerOnTile(watergirl, WALL_BTN)){
+          grid[y][x] = BUTTON_PRESSED;
+          openForButton(x, y);
+        }
+      }
+    }
+  }
+}
+
+function openForButton(btnX, btnY){
+  for (let y = 0; y < rows; y ++){
+    for (let x = 0; x < cols; x++){
+      if (grid[y][x] === DOOR_FIRE || grid[y][x] === DOOR_WATER){
+        grid[y][x] = EMPTY;
+      }
+    }
+  }
+}
+
+function playerMoveTo(player, newX, newY){
+  let left = Math.floor(newX / CELL_SIZE);
+  let right = Math.floor((newX + player.w -1)/ CELL_SIZE);
+  let top = Math.floor(newY / CELL_SIZE);
+  let bottom = Math.floor((newY + player.h -1)/ CELL_SIZE);
+
+  for (let y = top; y <= bottom; y++){
+    for (let x = left; x <= right; x++){
+      if (y < 0 || y >= rows || x < 0 || x >= cols){
+        return false;
+      }
+      let tile = grid[y][x];
+      if (tile === PLATFORM || tile === WALL || tile === WALL_BTN || tile === DOOR_FIRE || tile === DOOR_WATER){
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 function displayGrid() {
   image (gameBackground, 0, 0, width, height);
+
+  //constrain
+  fireboy.x = constrain(fireboy.x, 0, width - fireboy.w);
+  fireboy.y = constrain(fireboy.y, 0, height - fireboy.h);
+
+  watergirl.x = constrain(watergirl.x, 0, width - watergirl.w);
+  watergirl.y = constrain(watergirl.y, 0, height - watergirl.h);
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
@@ -176,6 +270,9 @@ function displayGrid() {
       }
       else if (cell === DOOR_FIRE){
         image(firedoor, xpos, ypos, CELL_SIZE, CELL_SIZE);
+      }
+      else if (cell === BUTTON_PRESSED){
+        image(btn_pressed, xpos, ypos, CELL_SIZE, CELL_SIZE);
       }
     }
   }
