@@ -1,5 +1,6 @@
 // 
 //
+
 //
 //images - https://github.com/hadigghazi/FireBoy-and-WaterGirl/commits?author=DawoudTormos
 
@@ -54,7 +55,6 @@ let watergirl = {
 };
 
 let keys = {};
-
 let playerImg1;
 let playerImg2;
 let tile;
@@ -65,6 +65,7 @@ let platformHeight;
 let platformWidth;
 
 function preload(){
+  //Loading Images
   playerImg1 = loadImage("fireboy.png");
   playerImg2 = loadImage("watergirl.png");
 
@@ -89,6 +90,16 @@ function setup() {
   let aspectRatio = tile.width / tile.height;
   platformWidth = 115;
   platformHeight = platformWidth / aspectRatio;
+
+  //   createCanvas(1000, 750);
+
+  // tilesHigh = lines.length;
+  // tilesWide = lines[0].length;
+
+  // tileWidth = width / tilesWide;
+  // tileHeight = height / tilesHigh;
+
+  // tiles = createEmpty2dArray(tilesWide, tilesHigh);
 }
 
 function draw() {
@@ -107,7 +118,7 @@ function draw() {
 
 function updatePlayer(p, safeTile, deadlyTile){
   // gravity
-  p.vy += 0.5;
+  p.vy += 0.1;
   p.y += p.vy;
 
   //collision
@@ -156,29 +167,30 @@ function playerMovement(){
     fireboy.vy = 0;
     fireboy.onGround = true;
   }
+
   
   //fireboy movement
   if (keys["w"] && fireboy.onGround){
-    fireboy.vy = -10;
+    fireboy.vy = -4;
     fireboy.onGround = false;
   }
   if (keys["d"] && playerMoveTo(fireboy, fireboy.x + 4, fireboy.y)){
-    fireboy.x += 4;
+    fireboy.x += 2;
   }
   if (keys["a"] && playerMoveTo(fireboy, fireboy.x - 4, fireboy.y)){
-    fireboy.x -= 4;;
+    fireboy.x -= 2;;
   }
 
   //watergirl movement
   if (keys[UP_ARROW] && watergirl.onGround){
-    watergirl.vy = -10;
+    watergirl.vy = -6;
     watergirl.onGround = false;
   }
   if (keys[RIGHT_ARROW] && playerMoveTo(watergirl, watergirl.x + 4, watergirl.y)){
-    watergirl.x += 4;
+    watergirl.x += 2;
   }
   if (keys[LEFT_ARROW] && playerMoveTo(watergirl, watergirl.x - 4, watergirl.y)){
-    watergirl.x -= 4;
+    watergirl.x -= 2;
   }
 }
 
@@ -204,8 +216,31 @@ function playerButtonActivate(){
 function openForButton(btnX, btnY){
   for (let y = 0; y < rows; y ++){
     for (let x = 0; x < cols; x++){
-      if (grid[y][x] === DOOR_FIRE || grid[y][x] === DOOR_WATER){
+      if (grid[y][x] === WALL){
         grid[y][x] = EMPTY;
+      }
+    }
+  }
+}
+
+function doorsActivate(){
+  for (let y = 0; y < rows; y ++){
+    for (let x = 0; x < cols; x++){
+      if (grid[y][x] === DOOR_FIRE || DOOR_WATER){
+        if (playerOnTile(fireboy, DOOR_FIRE) || playerOnTile(watergirl, DOOR_WATER)){
+          grid[y][x] = DOOR_OPEN; ///create DOOR_OPEN
+          openDoors();
+        }
+      }
+    }
+  }
+}
+
+function openDoors(){
+  for (let y = 0; y < rows; y ++){
+    for (let x = 0; x < cols; x++){
+      if (grid[y][x] === DOOR_FIRE || DOOR_WATER){
+        grid[y][x] = EMPTY; //maybe image of door open
       }
     }
   }
