@@ -11,6 +11,7 @@
 - [Rectangle neighbours](rectangle-neighbours)
 - [Game of life](game-of-life)
 - [Basic OOP](basic-opp)
+- [Walker OOP](walker-opp)
 
 ## Assignments
 -[Interactive Scene](interactive-scene)
