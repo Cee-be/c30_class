@@ -1,4 +1,4 @@
-//Grid-Based Game Assignment
+//Assignment
 //Ceberta Adum
 //12th November, 2025
 
@@ -60,17 +60,18 @@ let watergirl = {
   vy: 0,
   onGround: false
 };
-let nextY = p.y + p.vy; 
+
+
 
 let keys = {};
 let playerImg1;
 let playerImg2;
-let tile;
 let waterpit;
 let firepit;
 let greenpit;
 let platformHeight;
 let platformWidth;
+
 
 function preload(){
   //Loading Images
@@ -118,6 +119,7 @@ function draw() {
 function updatePlayer(p, safeTile, deadlyTile){
   // gravity
   p.vy += 0.4;
+  let nextY = p.y + p.vy; 
 
   if (playerMoveTo(p, p.x, nextY)){
     p.y = nextY;
@@ -126,7 +128,7 @@ function updatePlayer(p, safeTile, deadlyTile){
   else{
     p.vy = 0;
     p.onGround = true;
-    let bottomGrid = Math.floor((p.y + p.h) / CELL_SIZE); //move to top
+    let bottomGrid = Math.floor((p.y + p.h) / CELL_SIZE);
     p.y = bottomGrid * CELL_SIZE - p.h;
   }
 
@@ -138,6 +140,7 @@ function updatePlayer(p, safeTile, deadlyTile){
     return;
   }
 
+  
   let currentTile = grid[gridY][gridX];
 
   //safe on safetile (!falling)
@@ -201,9 +204,9 @@ function playerMovement(){
 
 //Tile player is on
 function playerOnTile(player, tileType){
-  let gridX = Math.floor((player.x + player.w/2)/ CELL_SIZE);
-  let gridY = Math.floor((player.y + player.h/2)/ CELL_SIZE);
-  return grid[gridY] && grid[gridY][gridX] === tileType;
+  let gridX2 = Math.floor((player.x + player.w/2)/ CELL_SIZE);
+  let gridY2 = Math.floor((player.y + player.h/2)/ CELL_SIZE);
+  return grid[gridY2] && grid[gridY2][gridX2] === tileType;
 }
 
 //Player activating the button
@@ -257,10 +260,10 @@ function openDoors(){
 function playerMoveTo(player, newX, newY){
   let left = Math.floor(newX / CELL_SIZE);
   let right = Math.floor((newX + player.w -1)/ CELL_SIZE);
-  let top = Math.floor(newY / CELL_SIZE);
+  let topRow = Math.floor(newY / CELL_SIZE);
   let bottom = Math.floor((newY + player.h -1)/ CELL_SIZE);
 
-  for (let y = top; y <= bottom; y++){
+  for (let y = topRow; y <= bottom; y++){
     for (let x = left; x <= right; x++){
       if (y < 0 || y >= rows || x < 0 || x >= cols){
         return false;
@@ -292,6 +295,7 @@ function displayGrid() {
   //Including different images
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
+
       let cell = grid[y][x];
       let xpos = x * CELL_SIZE;
       let ypos = y * CELL_SIZE; 
