@@ -1,7 +1,14 @@
-// 
-//
+//Grid-Based Game Assignment
+//Ceberta Adum
+//12th November, 2025
+
+//Extra For Experts
+// // Harzard interaction - fireboy fears water and waterhgirl fears water
+// // Button-trigger - when button is pushed, walls open
+// // two-player mechanics - two separated player(fireboy and watergirl) that work on diff. commands
 
 //
+
 //images - https://github.com/hadigghazi/FireBoy-and-WaterGirl/commits?author=DawoudTormos
 
 const CELL_SIZE = 50;
@@ -53,6 +60,7 @@ let watergirl = {
   vy: 0,
   onGround: false
 };
+let nextY = p.y + p.vy; 
 
 let keys = {};
 let playerImg1;
@@ -90,16 +98,6 @@ function setup() {
   let aspectRatio = tile.width / tile.height;
   platformWidth = 115;
   platformHeight = platformWidth / aspectRatio;
-
-  //   createCanvas(1000, 750);
-
-  // tilesHigh = lines.length;
-  // tilesWide = lines[0].length;
-
-  // tileWidth = width / tilesWide;
-  // tileHeight = height / tilesHigh;
-
-  // tiles = createEmpty2dArray(tilesWide, tilesHigh);
 }
 
 function draw() {
@@ -116,126 +114,135 @@ function draw() {
   image(playerImg2, watergirl.x, watergirl.y, watergirl.w, watergirl.h);
 }
 
+//Deciding which tile and safe and to whom
 function updatePlayer(p, safeTile, deadlyTile){
   // gravity
-  p.vy += 0.1;
-  p.y += p.vy;
+  p.vy += 0.4;
 
-  //collision
-  let gridX = Math.floor(p.x / CELL_SIZE);
-  let gridY = Math.floor((p.y + p.h)/ CELL_SIZE);
+  if (playerMoveTo(p, p.x, nextY)){
+    p.y = nextY;
+    p.onGround = false;
+  }
+  else{
+    p.vy = 0;
+    p.onGround = true;
+    let bottomGrid = Math.floor((p.y + p.h) / CELL_SIZE); //move to top
+    p.y = bottomGrid * CELL_SIZE - p.h;
+  }
 
-  //hazard detection
+  //Checking the tile under player 
+  let gridX = Math.floor((p.x + p.w/2) / CELL_SIZE);
+  let gridY = Math.floor((nextY + p.h - 1)/ CELL_SIZE);
+
   if (gridY < 0 || gridY >= rows || gridX < 0 || gridX >= cols){
     return;
   }
-    
+
   let currentTile = grid[gridY][gridX];
 
+  //safe on safetile (!falling)
   if (currentTile === PLATFORM || currentTile === safeTile){
+    p.y = gridY * CELL_SIZE -p.h;
     p.vy = 0;
     p.onGround = true;
-    p.y = gridY * CELL_SIZE - p.h;
   }
   else{
+    p.y = nextY;
     p.onGround = false;
   }
+
+  //Checking deadily tile
   if (currentTile === deadlyTile || currentTile === GREEN){
-    p.x = 0;
-    p.vy = 0;
+    if (p === fireboy){
+      p.x = 35;
+    }
+    else{
+      p.x = 0;
+    }
     p.y = 700;
+    p.vy = 0;
+    p.onGround = false;
   }
 }
 
 
 function keyPressed() {
-  keys[key.toLowerCase()] = true;
-  keys[keyCode] = true;
+  keys[key] = true;
 }
-
 function keyReleased(){
-  keys[key.toLowerCase()] = false;
-  keys[keyCode] = false;
+  keys[key] = false;
 }
 
 function playerMovement(){
-
-  if (playerMoveTo(fireboy, fireboy.x, fireboy.y + fireboy.vy)){
-    fireboy.y += fireboy.vy;
-  }
-  else{
-    fireboy.vy = 0;
-    fireboy.onGround = true;
-  }
-
-  
   //fireboy movement
   if (keys["w"] && fireboy.onGround){
-    fireboy.vy = -4;
+    fireboy.vy = -12;
     fireboy.onGround = false;
   }
-  if (keys["d"] && playerMoveTo(fireboy, fireboy.x + 4, fireboy.y)){
-    fireboy.x += 2;
+  if (keys["d"] && !keys["a"] && playerMoveTo(fireboy, fireboy.x + 4, fireboy.y)){
+    fireboy.x += 3;
   }
-  if (keys["a"] && playerMoveTo(fireboy, fireboy.x - 4, fireboy.y)){
-    fireboy.x -= 2;;
+  if (keys["a"] &&  !keys["d"] && playerMoveTo(fireboy, fireboy.x - 4, fireboy.y)){
+    fireboy.x -= 3;
   }
 
   //watergirl movement
-  if (keys[UP_ARROW] && watergirl.onGround){
-    watergirl.vy = -6;
+  if (keys["ArrowUp"] && watergirl.onGround){
+    watergirl.vy = -12;
     watergirl.onGround = false;
   }
-  if (keys[RIGHT_ARROW] && playerMoveTo(watergirl, watergirl.x + 4, watergirl.y)){
-    watergirl.x += 2;
+  if (keys["ArrowRight"] && !keys["ArrowLeft"] && playerMoveTo(watergirl, watergirl.x + 4, watergirl.y)){
+    watergirl.x += 3;
   }
-  if (keys[LEFT_ARROW] && playerMoveTo(watergirl, watergirl.x - 4, watergirl.y)){
-    watergirl.x -= 2;
+  if (keys["ArrowLeft"] && !keys["ArrowRight"] && playerMoveTo(watergirl, watergirl.x - 4, watergirl.y)){
+    watergirl.x -= 3;
   }
 }
 
+//Tile player is on
 function playerOnTile(player, tileType){
   let gridX = Math.floor((player.x + player.w/2)/ CELL_SIZE);
   let gridY = Math.floor((player.y + player.h/2)/ CELL_SIZE);
   return grid[gridY] && grid[gridY][gridX] === tileType;
 }
 
+//Player activating the button
 function playerButtonActivate(){
   for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++){
       if (grid[y][x] === WALL_BTN){
         if (playerOnTile(fireboy, WALL_BTN) || playerOnTile(watergirl, WALL_BTN)){
           grid[y][x] = BUTTON_PRESSED;
-          openForButton(x, y);
+          
+          if (y === 9){
+            clearWall(6);
+          }
+          else if (y === 6){
+            clearWall(3);
+          }
         }
       }
     }
   }
 }
 
-function openForButton(btnX, btnY){
-  for (let y = 0; y < rows; y ++){
-    for (let x = 0; x < cols; x++){
-      if (grid[y][x] === WALL){
-        grid[y][x] = EMPTY;
-      }
+//wall becoming empty
+function clearWall(rowNum){
+  for (let x = 0; x < cols; x++){
+    if (grid[rowNum][x]  === WALL){
+      grid[rowNum][x] = EMPTY;
     }
   }
 }
 
+//Doors activating when player reaches end
 function doorsActivate(){
-  for (let y = 0; y < rows; y ++){
-    for (let x = 0; x < cols; x++){
-      if (grid[y][x] === DOOR_FIRE || DOOR_WATER){
-        if (playerOnTile(fireboy, DOOR_FIRE) || playerOnTile(watergirl, DOOR_WATER)){
-          grid[y][x] = DOOR_OPEN; ///create DOOR_OPEN
-          openDoors();
-        }
-      }
-    }
+  if  (playerOnTile(fireboy, DOOR_FIRE) && playerOnTile(watergirl, DOOR_WATER)){
+    console.log("Level Complete!");
   }
 }
 
+//Doors opening when activated
 function openDoors(){
   for (let y = 0; y < rows; y ++){
     for (let x = 0; x < cols; x++){
@@ -246,6 +253,7 @@ function openDoors(){
   }
 }
 
+//Moven
 function playerMoveTo(player, newX, newY){
   let left = Math.floor(newX / CELL_SIZE);
   let right = Math.floor((newX + player.w -1)/ CELL_SIZE);
@@ -258,7 +266,11 @@ function playerMoveTo(player, newX, newY){
         return false;
       }
       let tile = grid[y][x];
-      if (tile === PLATFORM || tile === WALL || tile === WALL_BTN || tile === DOOR_FIRE || tile === DOOR_WATER){
+      if (tile === PLATFORM || 
+          tile === WALL || 
+          tile === WALL_BTN || 
+          tile === DOOR_FIRE || 
+          tile === DOOR_WATER){
         return false;
       }
     }
@@ -266,6 +278,7 @@ function playerMoveTo(player, newX, newY){
   return true;
 }
 
+//Visible objects in the grid
 function displayGrid() {
   image (gameBackground, 0, 0, width, height);
 
@@ -276,6 +289,7 @@ function displayGrid() {
   watergirl.x = constrain(watergirl.x, 0, width - watergirl.w);
   watergirl.y = constrain(watergirl.y, 0, height - watergirl.h);
 
+  //Including different images
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       let cell = grid[y][x];
